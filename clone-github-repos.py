@@ -74,7 +74,16 @@ def run_interactive():
         repo_list = repo_str.split(' ')
     array = []
     for i in repo_list:
-        array.append(links[int(i)-1])
+        try:
+            integer = int(i)
+        except ValueError:
+            print(i+" not a number, skipped")
+            continue
+        if integer < 0 or integer > len(links):
+            print(i+" out of range, skipped")
+            continue
+        array.append(links[integer-1])
+
     target = input("Target directory: ")
     clone(array, target, name)
     print("END")
@@ -89,5 +98,5 @@ if __name__ == '__main__':
         else:
             sys.exit("not enough parameter provided, exiting.")
     except KeyboardInterrupt:
-        sys.exit("Keyboard Interrupt received, exiting.")
+        sys.exit("\nKeyboard Interrupt received, exiting.")
 
