@@ -12,7 +12,7 @@ PARSER = argparse.ArgumentParser()
 PARSER.add_argument("-n", "--name", dest="name", metavar="\"account name\"", help="name of the account to clone")
 PARSER.add_argument("-i", "--interatctive", dest="inter", action="store_true", help="exec script in interactive mode")
 PARSER.add_argument("-t", "--target", dest="target", metavar="\"/destination/directory\"", help="target directory where to put the cloned repos")
-PARSER.set_defaults(name=None, inter=False, target=None)
+PARSER.set_defaults(name=None, inter=False, target='.')
 
 ARGS = PARSER.parse_args()
 
@@ -59,8 +59,9 @@ def run_script(name, target):
     clone(links, target, name)
 
 
-def run_interactive():
-    name = input("Github Username: ")
+def run_interactive(name, target):
+    if name is None:
+        name = input("Github Username: ")
     links = extract_repos_list(name)
     if len(links) == 0:
         sys.exit("no repository found")
@@ -84,7 +85,10 @@ def run_interactive():
             continue
         array.append(links[integer-1])
 
-    target = input("Target directory: ")
+    if target == '.':
+        target = input("Target directory (press enter to default): ")
+        if target == '':
+            target = '.'
     clone(array, target, name)
     print("END")
 
@@ -92,7 +96,7 @@ def run_interactive():
 if __name__ == '__main__':
     try:
         if ARGS.inter:
-            run_interactive()
+            run_interactive(ARGS.name, ARGS.target)
         elif ARGS.name is not None and ARGS.target is not None:
             run_script(ARGS.name, ARGS.target)
         else:
