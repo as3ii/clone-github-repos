@@ -6,6 +6,9 @@ import sys
 import subprocess
 import requests
 from bs4 import BeautifulSoup
+from colorama import init, Fore, Style
+
+init(autoreset=True)
 
 
 PARSER = argparse.ArgumentParser()
@@ -19,20 +22,20 @@ ARGS = PARSER.parse_args()
 
 def extract_repos_list(name):
     url = "https://github.com/" + name + "?tab=repositories"
-    print("parsing",url)
+    print(Fore.BLUE + Style.BRIGHT + "parsing",url)
 
     # get page
     try:
         page = requests.get(url)
     except requests.exceptions.ConnectionError:
-        sys.exit("Connection Error")
+        sys.exit(Fore.RED + Style.BRIGHT + "Connection Error")
     soup = BeautifulSoup(page.text, "html.parser")
 
     # extract repo's names
     links = []
     for link in soup.find_all(itemprop="name codeRepository"):
         links.append(link.get("href"))
-    print("found " + str(len(links)) + " repository")
+    print(Fore.GREEN + Style.BRIGHT + "found " + str(len(links)) + " repository")
     return(links)
 
 
@@ -45,18 +48,19 @@ def clone(links, target, name):
     try:
         os.mkdir(directory)
     except FileExistsError:
-        sys.exit("directory " + directory + " already exists")
+        sys.exit(Fore.RED + Style.BRIGHT + "directory " + directory + " already exists")
 
     os.chdir(directory)
 
     for link in links:
-        print(link.replace('/'+name+'/',''))
+        print(Fore.BLUE + Style.BRIGHT + "Start cloning: " + link.replace('/'+name+'/',''))
         subprocess.run(["git","clone","https://github.com"+link+".git"])
 
 
 def run_script(name, target):
     links = extract_repos_list(name)
     clone(links, target, name)
+    print(Fore.BLUE + Style.BRIGHT + "END")
 
 
 def run_interactive(name, target):
@@ -64,7 +68,7 @@ def run_interactive(name, target):
         name = input("Github Username: ")
     links = extract_repos_list(name)
     if len(links) == 0:
-        sys.exit("no repository found")
+        sys.exit(Fore.YELLOW + Style.BRIGHT + "no repository found")
     print("repository list:")
     for i in range(0, len(links)-1):
         print(' '+str(i+1)+')'+links[i])
@@ -78,10 +82,10 @@ def run_interactive(name, target):
         try:
             integer = int(i)
         except ValueError:
-            print(i+" not a number, skipped")
+            print(Fore.YELLOW + Style.BRIGHT + i+" not a number, skipped")
             continue
         if integer < 0 or integer > len(links):
-            print(i+" out of range, skipped")
+            print(Fore.YELLOW + Style.BRIGHT + i+" out of range, skipped")
             continue
         array.append(links[integer-1])
 
@@ -90,7 +94,7 @@ def run_interactive(name, target):
         if target == '':
             target = '.'
     clone(array, target, name)
-    print("END")
+    print(Fore.BLUE + Style.BRIGHT + "END")
 
 
 if __name__ == '__main__':
@@ -100,7 +104,7 @@ if __name__ == '__main__':
         elif ARGS.name is not None and ARGS.target is not None:
             run_script(ARGS.name, ARGS.target)
         else:
-            sys.exit("not enough parameter provided, exiting.")
+            sys.exit(Fore.RED + Style.BRIGHT + "not enough parameter provided, exiting.")
     except KeyboardInterrupt:
-        sys.exit("\nKeyboard Interrupt received, exiting.")
+        sys.exit(Fore.RED + Style.BRIGHT + "\nKeyboard Interrupt received, exiting.")
 
