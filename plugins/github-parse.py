@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess
 import requests
-import json
+from bs4 import BeautifulSoup
 from colorama import init, Fore, Style
 
 init(autoreset=True)
@@ -17,7 +17,7 @@ class Remote:
 
 
     def get_list_repos(self):
-        url = f"https://api.github.com/users/{self.username}/repos"
+        url = f"https://github.com/{self.username}?tab=repositories"
         print(f"{Fore.BLUE}{Style.BRIGHT}Parsing {url}")
 
         # get page
@@ -25,11 +25,11 @@ class Remote:
             page = requests.get(url)
         except requests.exceptions.ConnectionError:
             sys.exit(f"{Fore.RED}{Style.BRIGHT}Connection Error")
-        jparsed = json.loads(page.text)
+        soup = BeautifulSoup(page.text, "html.parser")
 
         # extract repo's names
-        for repo in jparsed:
-            self.repo_names.append(repo["name"])
+        for repos in soup.find_all(itemprop="name codeRepository"):
+            self.repo_names.append(repos.get("href").replace(f"/{self.username}/",''))
         print(f"{Fore.GREEN}{Style.BRIGHT}Found {str(len(self.repo_names))} repository")
 
 
