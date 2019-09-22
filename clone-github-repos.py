@@ -13,7 +13,7 @@ init(autoreset=True)
 PLUGIN_LIST = []
 for filename in os.listdir("plugins"):
     if ".py" in filename and "__" not in filename:
-        PLUGIN_LIST.append("plugins."+filename.replace(".py",''))
+        PLUGIN_LIST.append(filename.replace(".py",''))
 
 
 PARSER = argparse.ArgumentParser()
@@ -37,8 +37,9 @@ def run_script(name, target, remote):
 
 
 def run_interactive(name, target, remote):
-    if remote is None:
-        print(f"Remote repository platform: {", ".join(PLUGIN_LIST)}")
+    print("Running interactively")
+    if remote is None or remote is "github":
+        print(f"Remote repository platform: {', '.join(PLUGIN_LIST)}")
         remote = input("Choose one of the listed platform: [default: github] ").lower()
         if remote == '':
             remote = "github"
@@ -53,8 +54,8 @@ def run_interactive(name, target, remote):
     user.get_list_repos()
     user.print_list_repos()
 
-    repo_str = input(f"Write which repo to download (space-separated or \"all\") [1-{str(len(user.repo_names))}]: ")
-    if repo_str.lower() == "all":
+    repo_str = input(f"Write which repo to download (space-separated, default: all) [1-{str(len(user.repo_names))}]: ")
+    if repo_str is '':
         repo_list = range(len(user.repo_names))
     else:
         repo_list = repo_str.split(' ')

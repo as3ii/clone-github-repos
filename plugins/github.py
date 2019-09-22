@@ -48,7 +48,7 @@ class Remote:
                 except ValueError:
                     print(f"{Fore.YELLOW}{Style.BRIGHT}{i} not a number, skipped")
                     continue
-                if integer < 0 or integer >= len(self.links):
+                if integer < 0 or integer >= len(self.repo_names):
                     print(f"{Fore.YELLOW}{Style.BRIGHT}{i} out of range, skipped")
                     continue
                 repo_array.append(self.repo_names[integer-1])
