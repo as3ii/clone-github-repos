@@ -22,10 +22,17 @@ class Remote:
 
         # get page
         try:
-            page = requests.get(url)
+            response = requests.get(url)
         except requests.exceptions.ConnectionError:
             sys.exit(f"{Fore.RED}{Style.BRIGHT}Connection Error")
-        jparsed = json.loads(page.text)
+
+        if response.status_code == 404:
+            sys.exit(f"Error 404: user {self.username} not found")
+        elif response.status_code != 200:
+            sys.exit(f"{Fore.RED}{Style.BRIGHT}Ther is a problem. Request status code: {response.status_code}")
+        elif response.text == "[]":
+            sys.exit(f"No repository found for {self.username}")
+        jparsed = json.loads(response.text)
 
         # extract repo's names
         for repo in jparsed:
