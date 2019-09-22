@@ -53,9 +53,9 @@ def run_interactive(name, target, remote):
     user.get_list_repos()
     user.print_list_repos()
 
-    repo_str = input(f"Write which repo to download (space-separated or \"all\") [1-{str(len(user.links))}]: ")
+    repo_str = input(f"Write which repo to download (space-separated or \"all\") [1-{str(len(user.repo_names))}]: ")
     if repo_str.lower() == "all":
-        repo_list = range(len(links))
+        repo_list = range(len(user.repo_names))
     else:
         repo_list = repo_str.split(' ')
 
