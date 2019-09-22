@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.7
-
 import os
 import sys
 import subprocess
@@ -19,26 +17,26 @@ class Remote:
 
 
     def get_list_repos(self):
-        url = "https://github.com/" + self.username + "?tab=repositories"
-        print(Fore.BLUE + Style.BRIGHT + "parsing",url)
+        url = f"https://github.com/{self.username}?tab=repositories"
+        print(f"{Fore.BLUE}{Style.BRIGHT}Parsing {url}")
 
         # get page
         try:
             page = requests.get(url)
         except requests.exceptions.ConnectionError:
-            sys.exit(Fore.RED + Style.BRIGHT + "Connection Error")
+            sys.exit(f"{Fore.RED}{Style.BRIGHT}Connection Error")
         soup = BeautifulSoup(page.text, "html.parser")
 
         # extract repo's names
         for link in soup.find_all(itemprop="name codeRepository"):
             self.links.append(link.get("href"))
-        print(Fore.GREEN + Style.BRIGHT + "found " + str(len(self.links)) + " repository")
+        print(f"{Fore.GREEN}{Style.BRIGHT}Found {str(len(self.links))} repository")
 
 
     def print_list_repos(self):
-        print("repository list:")
+        print("Repository list:")
         for i in range(0, len(self.links)-1):
-            print(' '+str(i+1)+')'+self.links[i])
+            print(f" {str(i+1)}) {self.links[i]}")
 
 
     def clone_repos(self, repos=[]):
@@ -48,10 +46,10 @@ class Remote:
                 try:
                     integer = int(i)
                 except ValueError:
-                    print(Fore.YELLOW + Style.BRIGHT + i+" not a number, skipped")
+                    print(f"{Fore.YELLOW}{Style.BRIGHT}{i} not a number, skipped")
                     continue
                 if integer < 0 or integer >= len(self.links):
-                    print(Fore.YELLOW + Style.BRIGHT + i+" out of range, skipped")
+                    print(f"{Fore.YELLOW}{Style.BRIGHT}{i} out of range, skipped")
                     continue
                 link_array.append(self.links[integer-1])
         else:
@@ -65,11 +63,11 @@ class Remote:
         try:
             os.mkdir(directory)
         except FileExistsError:
-            sys.exit(Fore.RED + Style.BRIGHT + "directory " + directory + " already exists")
+            sys.exit(f"{Fore.RED}{Style.BRIGHT}Directory {directory} already exists")
 
         os.chdir(directory)
 
         for link in link_array:
-            print(Fore.BLUE + Style.BRIGHT + "Start cloning: " + link.replace('/'+self.username+'/',''))
+            print(f"{Fore.BLUE}{Style.BRIGHT}Start cloning: {link.replace('/'+self.username+'/','')}")
             subprocess.run(["git","clone","https://github.com"+link+".git"])
 
