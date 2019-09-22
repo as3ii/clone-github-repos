@@ -42,7 +42,7 @@ class Remote:
 
     def print_list_repos(self):
         print("Repository list:")
-        for i in range(0, len(self.repo_names)-1):
+        for i in range(0, len(self.repo_names)):
             print(f" {str(i+1)}) {self.repo_names[i]}")
 
 
