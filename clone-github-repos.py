@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 
 import importlib
 import argparse
@@ -38,7 +38,7 @@ def run_script(name, target, remote):
 
 def run_interactive(name, target, remote):
     print("Running interactively")
-    if remote is None or remote is "github":
+    if remote is None or remote == "github":
         print(f"Remote repository platform: {', '.join(PLUGIN_LIST)}")
         remote = input("Choose one of the listed platform: [default: github] ").lower()
         if remote == '':
@@ -55,7 +55,7 @@ def run_interactive(name, target, remote):
     user.print_list_repos()
 
     repo_str = input(f"Write which repo to download (space-separated, default: all) [1-{str(len(user.repo_names))}]: ")
-    if repo_str is '':
+    if repo_str == '':
         repo_list = range(len(user.repo_names))
     else:
         repo_list = repo_str.split(' ')
